@@ -1,26 +1,30 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { fetchContacts, addContact, deleteContact } from './contactsOps';
+import { selectNameFilter } from './filtersSlice';
 
-const defaultContacts = [
-  { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
-  { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
-  { id: "id-3", name: "Eden Clements", number: "645-17-79" },
-  { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
-];
+export const selectContacts = (state) => state.contacts.items;
+export const selectLoading = (state) => state.contacts.loading;
+export const selectError = (sate) => state.contacts.error;
+
+export const selectFilteredContacts = createSelector(
+    [selectContacts, selectNameFilter],
+    (contacts, selectFilter) => {
+        console.log('selectFilteredContacts', Date.now());
+        return contacts.filter((contact) => contact.text.toLowerCase().includes(selectFilter.toLowerCase()))
+    }
+)
+
 
 const contactsSlice = createSlice({
-    name: 'contacts',
-    initialState: {
-        items: defaultContacts
-    },
-    reducers: {
-        addContact: (state, action) => {
-            state.items.push(action.payload)
-        },
-        deleteContact: (state, action) => {
-            state.items = state.items.filter(contact => contact.id !== action.payload)
-        }
-    }
+  contacts: {
+    items: [],
+    loading: false,
+    error: null
+  },
+  filters: {
+		name: ""
+	}
 })
 
 export default contactsSlice.reducer;
-export const { addContact, deleteContact } = contactsSlice.actions;
+export const {fetchContacts, addContact, deleteContact } = contactsSlice.actions;
