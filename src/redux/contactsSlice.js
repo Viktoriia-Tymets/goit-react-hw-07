@@ -8,11 +8,17 @@ export const selectError = (state) => state.contacts.error;
 
 export const selectFilteredContacts = createSelector(
     [selectContacts, selectNameFilter],
-    (contacts, selectFilter) => {
-        console.log('selectFilteredContacts', Date.now());
-        return contacts.filter((contact) => contact.text.toLowerCase().includes(selectFilter.toLowerCase()))
-    }
-)
+    (contacts, filterValue) => {
+      console.log('selectFilteredContacts', Date.now());
+      const normalizedFilter = (filterValue || "").toLowerCase();
+        return contacts.filter(
+      (contact) =>
+        typeof contact.name === "string" &&
+        contact.name.toLowerCase().includes(normalizedFilter)
+    );
+  }
+);
+
 
 
 const contactsSlice = createSlice({
